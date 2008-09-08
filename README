@@ -1,0 +1,36 @@
+ParentalControl
+===============
+
+Using parental control your associations will share model instances with each other where appropriate.  For example, when using a parent to fetch a child, the child will return the same parent instance if you ask it for it's parent, rather than fetching it from the database.
+
+This might increase performance.  It might not.  It might make it easier to do things where a child relies on a parent for validation, and you make changes to both parent and child before saving.
+
+So far it works for has_many and has_one (not :through) associations.  It also works for belongs_to asociations where the reciprocal association on the parent is a has_one.
+
+Example
+=======
+
+Scenario:
+
+class Man < ActiveRecord::Base
+  has_one :face
+end
+
+class Face < ActiveRecord::Base
+  belongs_to :man
+end
+
+m = Man.first
+f = m.face
+m.name == f.man.name # => true
+m.name = 'Dave'
+
+Without self_control
+
+m.name == f.man.name # => false : m and f.man are different instances of Man.first :(
+
+With self_control
+
+m.name == f.man.name # => true : m and f.man are the same instances of Man.first :(
+
+Copyright (c) 2008 Murray Steele, released under the MIT license
