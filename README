@@ -31,6 +31,6 @@ m.name == f.man.name # => false : m and f.man are different instances of Man.fir
 
 With self_control
 
-m.name == f.man.name # => true : m and f.man are the same instances of Man.first :(
+m.name == f.man.name # => true : m and f.man are the same instances of Man.first :)
 
 Copyright (c) 2008 Murray Steele, released under the MIT license
