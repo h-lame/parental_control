@@ -2,6 +2,7 @@ module ParentalControl
   
   module AssociationProxyMethods
     def set_reciprocal_instance(record, instance)
+      return if record.nil?
       # NOTE: Right now it only really makes sense to cope with a has_one 
       # reciprocal association for belongs_to.      
       reciprocal_relationship = nil
