@@ -17,6 +17,11 @@ class CreateSchema < ActiveRecord::Migration
     create_table :interests, :force => true do |t|
       t.string :topic
       t.integer :man_id
+      t.integer :almanac_id
+    end
+    
+    create_table :zines, :force => true do |t|
+      t.string :title
     end
   end
 end
@@ -34,18 +39,27 @@ end
 
 class Interest < ActiveRecord::Base
   belongs_to :man
+  belongs_to :zine
 end
+
+class Zine < ActiveRecord::Base
+  has_many :interests
+end
+
+compendia_one = Zine.create(:title => 'Staying in \'08')
+
+compendia_two = Zine.create(:title => 'Outdoor Pursuits 2k+8')
 
 dave = Man.new(:name => 'Dave')
 dave.build_face(:description => 'trusting')
-dave.interests.build(:topic => 'Trainspotting')
-dave.interests.build(:topic => 'Birdwatching')
-dave.interests.build(:topic => 'Stamp Collecting')
+dave.interests.build(:topic => 'Trainspotting', :zine => compendia_one)
+dave.interests.build(:topic => 'Birdwatching', :zine => compendia_one)
+dave.interests.build(:topic => 'Stamp Collecting', :zine => compendia_one)
 dave.save!
 
 steve = Man.new(:name => 'Steve')
 steve.build_face(:description => 'weather beaten')
-steve.interests.build(:topic => 'Hunting')
-steve.interests.build(:topic => 'Woodsmanship')
-steve.interests.build(:topic => 'Survival')
+steve.interests.build(:topic => 'Hunting', :zine => compendia_two)
+steve.interests.build(:topic => 'Woodsmanship', :zine => compendia_two)
+steve.interests.build(:topic => 'Survival', :zine => compendia_two)
 steve.save!

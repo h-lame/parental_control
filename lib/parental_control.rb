@@ -1,13 +1,18 @@
 module ParentalControl
   
   module AssociationProxyMethods
+    def cached_reciprocal_assocation_method_name(record, instance)
+      :"best_guess_reciprocal_association_for_#{@reflection.name}_from_#{instance.class.name.underscore}"
+    end
+    
     def set_reciprocal_instance(record, instance)
       return if record.nil?
       # NOTE: Right now it only really makes sense to cope with a has_one 
       # reciprocal association for belongs_to.      
       reciprocal_relationship = nil
-      if record.class.respond_to?(:"best_guess_reciprocal_association_for_#{@reflection.name}")
-        reciprocal_relationship = record.class.send(:"best_guess_reciprocal_association_for_#{@reflection.name}")
+      reciprocal_method_name = cached_reciprocal_assocation_method_name(record, instance)
+      if record.class.respond_to?(reciprocal_method_name)
+        reciprocal_relationship = record.class.send(reciprocal_method_name)
       else
         look_for = if @reflection.macro == :belongs_to
                      :has_one
@@ -21,7 +26,7 @@ module ParentalControl
                      end
         if candidates.size == 1
           record.class.class_eval %Q{
-            def self.best_guess_reciprocal_association_for_#{@reflection.name}
+            def self.#{reciprocal_method_name}
               return reflect_on_association(:#{candidates.first.name})
             end
           }

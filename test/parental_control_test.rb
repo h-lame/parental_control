@@ -107,5 +107,23 @@ class ParentalControlBelongsToTests < Test::Unit::TestCase
     m.face.description = 'pleasing'
     assert_equal f.description, m.face.description, "Description of face should be the same after changes to newly-created-parent-owned instance"
   end
+end
 
+class ParentalControlMultipleHasManyReciprocalsForSameModel < Test::Unit::TestCase
+  def test_that_we_can_load_associations_that_have_the_same_reciprocal_name_from_different_models
+    assert_nothing_raised(ActiveRecord::AssociationTypeMismatch) do
+      i = Interest.find(:first)
+      z = i.zine
+      m = i.man
+    end
+  end
+  
+  def test_that_we_can_create_associations_that_have_the_same_reciprocal_name_from_different_models
+    assert_nothing_raised(ActiveRecord::AssociationTypeMismatch) do
+      i = Interest.find(:first)
+      i.build_zine(:title => 'Get Some in Winter! 2008')
+      i.build_man(:name => 'Gordon')
+      i.save!
+    end
+  end
 end
