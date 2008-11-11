@@ -22,7 +22,7 @@ module ParentalControl
         candidates = record.class.reflect_on_all_associations.select do |assoc|
                        assoc.primary_key_name == @reflection.primary_key_name &&
                        assoc.macro == look_for &&
-                       assoc.klass == instance.class
+                       instance.is_a?(assoc.klass)
                      end
         if candidates.size == 1
           record.class.class_eval %Q{
@@ -33,7 +33,43 @@ module ParentalControl
           reciprocal_relationship = candidates.first
         end
       end
-      record.send("#{reciprocal_relationship.name}=", instance) unless reciprocal_relationship.nil?
+      unless reciprocal_relationship.nil?
+        ivar = "@#{reciprocal_relationship.name}"
+        the_proxy_class = association_proxy_class(reciprocal_relationship)
+        record.instance_eval do
+          assoc = instance_variable_get(ivar)
+          if assoc.nil?
+            assoc = the_proxy_class.new(record, reciprocal_relationship)
+            instance_variable_set(ivar, assoc)
+          end
+          assoc.target= instance
+        end
+      end
+    end
+
+    def association_proxy_class(reflection)
+      case reflection.macro
+      when :belongs_to
+        if reflection.options[:polymorphic]
+          ActiveRecord::Associations::BelongsToPolymorphicAssociation
+        else
+          ActiveRecord::Associations::BelongsToAssociation
+        end
+      when :has_one
+        if reflection.through_reflection
+          ActiveRecord::Associations::HasOneThroughAssociation
+        else
+          ActiveRecord::Associations::HasOneAssociation
+        end
+      when :has_many
+        if reflection.through_reflection
+          ActiveRecord::Associations::HasManyThroughAssociation
+        else
+          ActiveRecord::Associations::HasManyAssociation
+        end
+      when :has_and_belongs_to_many
+        ActiveRecord::Associations::HasAndBelongsToManyAssociation
+      end
     end
   end
   
