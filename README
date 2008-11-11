@@ -25,11 +25,11 @@ f = m.face
 m.name == f.man.name # => true
 m.name = 'Dave'
 
-Without self_control
+Without parental_control
 
 m.name == f.man.name # => false : m and f.man are different instances of Man.first :(
 
-With self_control
+With parental_control
 
 m.name == f.man.name # => true : m and f.man are the same instances of Man.first :)
 
