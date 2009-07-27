@@ -61,9 +61,21 @@ class ParentalControlHasManyTests < Test::Unit::TestCase
     assert_equal m.name, i.man.name, "Name of man should be the same after changes to just-built-child-owned instance"
   end
   
+  def test_parent_instance_should_be_shared_with_newly_block_style_built_child
+    m = Man.find(:first)
+    i = m.interests.build {|ii| ii.topic = 'Industrial Revolution Re-enactment'}
+    assert_not_nil i.topic, "Child attributes supplied to build via blocks should be populated"
+    assert_not_nil i.man
+    assert_equal m.name, i.man.name, "Name of man should be the same before changes to parent instance"
+    m.name = 'Bongo'
+    assert_equal m.name, i.man.name, "Name of man should be the same after changes to parent instance"
+    i.man.name = 'Mungo'
+    assert_equal m.name, i.man.name, "Name of man should be the same after changes to just-built-child-owned instance"
+  end
+  
   def test_parent_instance_should_be_shared_with_newly_created_child
     m = Man.find(:first)
-    i = m.interests.build(:topic => 'Industrial Revolution Re-enactment')
+    i = m.interests.create(:topic => 'Industrial Revolution Re-enactment')
     assert_not_nil i.man
     assert_equal m.name, i.man.name, "Name of man should be the same before changes to parent instance"
     m.name = 'Bongo'
@@ -72,6 +84,17 @@ class ParentalControlHasManyTests < Test::Unit::TestCase
     assert_equal m.name, i.man.name, "Name of man should be the same after changes to newly-created-child-owned instance"
   end
 
+  def test_parent_instance_should_be_shared_with_newly_block_style_created_child
+    m = Man.find(:first)
+    i = m.interests.create {|ii| ii.topic = 'Industrial Revolution Re-enactment'}
+    assert_not_nil i.topic, "Child attributes supplied to create via blocks should be populated"
+    assert_not_nil i.man
+    assert_equal m.name, i.man.name, "Name of man should be the same before changes to parent instance"
+    m.name = 'Bongo'
+    assert_equal m.name, i.man.name, "Name of man should be the same after changes to parent instance"
+    i.man.name = 'Mungo'
+    assert_equal m.name, i.man.name, "Name of man should be the same after changes to newly-created-child-owned instance"
+  end
 end
 
 class ParentalControlBelongsToTests < Test::Unit::TestCase

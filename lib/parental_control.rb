@@ -133,15 +133,15 @@ module ParentalControl
   module HasManyAssociationMethods
     def self.included(base)
       base.class_eval do
-        def create_with_self_control(attributes = {})
-          record = create_without_self_control(attributes)
+        def create_with_self_control(attributes = {}, &block)
+          record = create_without_self_control(attributes, &block)
           set_reciprocal_instance(record, @owner)
           record
         end
         alias_method_chain :create, :self_control
         
-        def build_with_self_control(attributes = {})
-          record = build_without_self_control(attributes)
+        def build_with_self_control(attributes = {}, &block)
+          record = build_without_self_control(attributes, &block)
           set_reciprocal_instance(record, @owner)
           record
         end
