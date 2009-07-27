@@ -79,26 +79,26 @@ module ParentalControl
   module BelongsToAssociationMethods
     def self.included(base)
       base.class_eval do
-        def create_with_self_control(attributes = {})
-          record = create_without_self_control(attributes)
+        def create_with_parental_control(attributes = {})
+          record = create_without_parental_control(attributes)
           set_reciprocal_instance(record, @owner)
           record
         end
-        alias_method_chain :create, :self_control
+        alias_method_chain :create, :parental_control
     
-        def build_with_self_control(attributes = {})
-          record = build_without_self_control(attributes)
+        def build_with_parental_control(attributes = {})
+          record = build_without_parental_control(attributes)
           set_reciprocal_instance(record, @owner)
           record
         end
-        alias_method_chain :build, :self_control
+        alias_method_chain :build, :parental_control
     
-        def find_target_with_self_control
-          record = find_target_without_self_control
+        def find_target_with_parental_control
+          record = find_target_without_parental_control
           set_reciprocal_instance(record, @owner)
           record
         end
-        alias_method_chain :find_target, :self_control
+        alias_method_chain :find_target, :parental_control
       end
     end
   end
@@ -106,26 +106,26 @@ module ParentalControl
   module HasOneAssociationMethods
     def self.included(base)
       base.class_eval do
-        def create_with_self_control(attributes = {}, replace_existing = true)
-          record = create_without_self_control(attributes, replace_existing)
+        def create_with_parental_control(attributes = {}, replace_existing = true)
+          record = create_without_parental_control(attributes, replace_existing)
           set_reciprocal_instance(record, @owner)
           record
         end
-        alias_method_chain :create, :self_control
+        alias_method_chain :create, :parental_control
     
-        def build_with_self_control(attributes = {}, replace_existing = true)
-          record = build_without_self_control(attributes, replace_existing)
+        def build_with_parental_control(attributes = {}, replace_existing = true)
+          record = build_without_parental_control(attributes, replace_existing)
           set_reciprocal_instance(record, @owner)
           record
         end
-        alias_method_chain :build, :self_control
+        alias_method_chain :build, :parental_control
     
-        def find_target_with_self_control
-          record = find_target_without_self_control
+        def find_target_with_parental_control
+          record = find_target_without_parental_control
           set_reciprocal_instance(record, @owner)
           record
         end
-        alias_method_chain :find_target, :self_control
+        alias_method_chain :find_target, :parental_control
       end
     end
   end
@@ -133,28 +133,28 @@ module ParentalControl
   module HasManyAssociationMethods
     def self.included(base)
       base.class_eval do
-        def create_with_self_control(attributes = {}, &block)
-          record = create_without_self_control(attributes, &block)
+        def create_with_parental_control(attributes = {}, &block)
+          record = create_without_parental_control(attributes, &block)
           set_reciprocal_instance(record, @owner)
           record
         end
-        alias_method_chain :create, :self_control
+        alias_method_chain :create, :parental_control
         
-        def build_with_self_control(attributes = {}, &block)
-          record = build_without_self_control(attributes, &block)
+        def build_with_parental_control(attributes = {}, &block)
+          record = build_without_parental_control(attributes, &block)
           set_reciprocal_instance(record, @owner)
           record
         end
-        alias_method_chain :build, :self_control
+        alias_method_chain :build, :parental_control
         
-        def find_target_with_self_control
-          records = find_target_without_self_control
+        def find_target_with_parental_control
+          records = find_target_without_parental_control
           records.each do |record|
             set_reciprocal_instance(record, @owner)
           end
           records
         end
-        alias_method_chain :find_target, :self_control
+        alias_method_chain :find_target, :parental_control
       end
     end
   end
