@@ -20,9 +20,13 @@ module ParentalControl
                      :belongs_to
                    end 
         candidates = record.class.reflect_on_all_associations.select do |assoc|
-                       assoc.primary_key_name == @reflection.primary_key_name &&
-                       assoc.macro == look_for &&
-                       instance.is_a?(assoc.klass)
+                       begin
+                         assoc.primary_key_name == @reflection.primary_key_name &&
+                         assoc.macro == look_for &&
+                         instance.is_a?(assoc.klass)
+                       rescue NameError => e
+                         false
+                       end
                      end
         if candidates.size == 1
           record.class.class_eval %Q{

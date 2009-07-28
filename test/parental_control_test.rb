@@ -150,3 +150,34 @@ class ParentalControlMultipleHasManyReciprocalsForSameModel < Test::Unit::TestCa
     end
   end
 end
+
+class ParentalControlShouldntBreakWithPolymorphics < Test::Unit::TestCase
+  def test_trying_to_create_new_polymorphics_directly_shouldnt_cause_name_errors
+    f = Face.first(:first)
+    assert_nothing_raised(NameError) do
+      mt = MagicTrick.new(:magic_word => 'Shazam!', :revealable => f)
+      mt.save!
+      f.magic_trick
+      mt.revealable
+    end
+  end
+
+  def test_trying_to_build_new_polymorphics_via_association_shouldnt_cause_name_errors
+    f = Face.first(:first)
+    assert_nothing_raised(NameError) do
+      mt = f.build_magic_trick(:magic_word => 'Shazam!')
+      mt.save!
+      f.magic_trick
+      mt.revealable
+    end
+  end
+
+  def test_trying_to_create_new_polymorphics_via_association_shouldnt_cause_name_errors
+    f = Face.first(:first)
+    assert_nothing_raised(NameError) do
+      mt = f.create_magic_trick(:magic_word => 'Shazam!')
+      f.magic_trick
+      mt.revealable
+    end
+  end
+end
