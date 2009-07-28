@@ -105,6 +105,19 @@ class ParentalControlHasManyTests < Test::Unit::TestCase
     i.man.name = 'Mungo'
     assert_equal m.name, i.man.name, "Name of man should be the same after changes to newly-created-child-owned instance"
   end
+  
+  def test_parent_instance_should_be_shared_with_pushed_on_child
+    m = Man.find(:first)
+    i = Interest.new(:topic => 'Industrial Revolution Re-enactment')
+    m.interests << i
+    assert_not_nil i.man
+    assert_equal m.name, i.man.name, "Name of man should be the same before changes to parent instance"
+    m.name = 'Bongo'
+    assert_equal m.name, i.man.name, "Name of man should be the same after changes to parent instance"
+    i.man.name = 'Mungo'
+    assert_equal m.name, i.man.name, "Name of man should be the same after changes to pushed-on-child-owned instance"
+  end
+
 end
 
 class ParentalControlBelongsToTests < Test::Unit::TestCase

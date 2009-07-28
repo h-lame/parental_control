@@ -146,19 +146,26 @@ module ParentalControl
   module HasManyAssociationMethods
     def self.included(base)
       base.class_eval do
-        def create_with_parental_control(attributes = {}, &block)
-          record = create_without_parental_control(attributes, &block)
-          set_reciprocal_instance(record, @owner)
-          record
-        end
-        alias_method_chain :create, :parental_control
         
-        def build_with_parental_control(attributes = {}, &block)
-          record = build_without_parental_control(attributes, &block)
+        def add_record_to_target_with_callbacks_with_parental_control(record, &block)
           set_reciprocal_instance(record, @owner)
-          record
+          add_record_to_target_with_callbacks_without_parental_control(record, &block)
         end
-        alias_method_chain :build, :parental_control
+        alias_method_chain :add_record_to_target_with_callbacks, :parental_control
+        
+        # def create_with_parental_control(attributes = {}, &block)
+        #   record = create_without_parental_control(attributes, &block)
+        #   set_reciprocal_instance(record, @owner)
+        #   record
+        # end
+        # alias_method_chain :create, :parental_control
+        # 
+        # def build_with_parental_control(attributes = {}, &block)
+        #   record = build_without_parental_control(attributes, &block)
+        #   set_reciprocal_instance(record, @owner)
+        #   record
+        # end
+        # alias_method_chain :build, :parental_control
         
         def find_target_with_parental_control
           records = find_target_without_parental_control
