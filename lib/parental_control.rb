@@ -110,19 +110,28 @@ module ParentalControl
   module HasOneAssociationMethods
     def self.included(base)
       base.class_eval do
-        def create_with_parental_control(attributes = {}, replace_existing = true)
-          record = create_without_parental_control(attributes, replace_existing)
-          set_reciprocal_instance(record, @owner)
-          record
+        def new_record_with_parental_control(replace_existing, &block)
+          new_record_without_parental_control(replace_existing) do |reflection|
+            record = block.call(reflection)
+            set_reciprocal_instance(record, @owner)
+            record
+          end
         end
-        alias_method_chain :create, :parental_control
-    
-        def build_with_parental_control(attributes = {}, replace_existing = true)
-          record = build_without_parental_control(attributes, replace_existing)
-          set_reciprocal_instance(record, @owner)
-          record
-        end
-        alias_method_chain :build, :parental_control
+        alias_method_chain :new_record, :parental_control
+                
+        # def create_with_parental_control(attributes = {}, replace_existing = true)
+        #   record = create_without_parental_control(attributes, replace_existing)
+        #   set_reciprocal_instance(record, @owner)
+        #   record
+        # end
+        # alias_method_chain :create, :parental_control
+        #     
+        # def build_with_parental_control(attributes = {}, replace_existing = true)
+        #   record = build_without_parental_control(attributes, replace_existing)
+        #   set_reciprocal_instance(record, @owner)
+        #   record
+        # end
+        # alias_method_chain :build, :parental_control
     
         def find_target_with_parental_control
           record = find_target_without_parental_control

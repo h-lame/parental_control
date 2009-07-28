@@ -33,7 +33,17 @@ class ParentalControlHasOneTests < Test::Unit::TestCase
     f.man.name = 'Mungo'
     assert_equal m.name, f.man.name, "Name of man should be the same after changes to newly-created-child-owned instance"
   end
-  
+
+  def test_parent_instance_should_be_shared_with_newly_created_child_via_bang_method
+    m = Man.find(:first)
+    f = m.face.create!(:description => 'haunted')
+    assert_not_nil f.man
+    assert_equal m.name, f.man.name, "Name of man should be the same before changes to parent instance"
+    m.name = 'Bongo'
+    assert_equal m.name, f.man.name, "Name of man should be the same after changes to parent instance"
+    f.man.name = 'Mungo'
+    assert_equal m.name, f.man.name, "Name of man should be the same after changes to newly-created-child-owned instance"
+  end
 end
 
 class ParentalControlHasManyTests < Test::Unit::TestCase
