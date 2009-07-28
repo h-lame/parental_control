@@ -49,19 +49,11 @@ module ParentalControl
   module BelongsToAssociationMethods
     def self.included(base)
       base.class_eval do
-        def create_with_parental_control(attributes = {})
-          record = create_without_parental_control(attributes)
+        def replace_with_parental_control(record)
           set_reciprocal_instance(record, @owner)
-          record
+          replace_without_parental_control(record)
         end
-        alias_method_chain :create, :parental_control
-    
-        def build_with_parental_control(attributes = {})
-          record = build_without_parental_control(attributes)
-          set_reciprocal_instance(record, @owner)
-          record
-        end
-        alias_method_chain :build, :parental_control
+        alias_method_chain :replace, :parental_control
     
         def find_target_with_parental_control
           record = find_target_without_parental_control
@@ -76,10 +68,18 @@ module ParentalControl
   module HasOneAssociationMethods
     def self.included(base)
       base.class_eval do
+        def replace_with_parental_control(*args)
+          set_reciprocal_instance(args.first, @owner)
+          replace_without_parental_control(*args)
+        end
+        alias_method_chain :replace, :parental_control
+        
         def new_record_with_parental_control(replace_existing, &block)
           new_record_without_parental_control(replace_existing) do |reflection|
             record = block.call(reflection)
-            set_reciprocal_instance(record, @owner)
+            # if we are going to replace_existing, this'll get done in our 
+            # replace_with_parental_control above - no point in doing it twice
+            set_reciprocal_instance(record, @owner) unless replace_existing 
             record
           end
         end
