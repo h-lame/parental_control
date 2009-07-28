@@ -94,6 +94,17 @@ class ParentalControlHasManyTests < Test::Unit::TestCase
     assert_equal m.name, i.man.name, "Name of man should be the same after changes to newly-created-child-owned instance"
   end
 
+  def test_parent_instance_should_be_shared_with_newly_created_via_bang_method_child
+    m = Man.find(:first)
+    i = m.interests.create!(:topic => 'Industrial Revolution Re-enactment')
+    assert_not_nil i.man
+    assert_equal m.name, i.man.name, "Name of man should be the same before changes to parent instance"
+    m.name = 'Bongo'
+    assert_equal m.name, i.man.name, "Name of man should be the same after changes to parent instance"
+    i.man.name = 'Mungo'
+    assert_equal m.name, i.man.name, "Name of man should be the same after changes to newly-created-child-owned instance"
+  end
+
   def test_parent_instance_should_be_shared_with_newly_block_style_created_child
     m = Man.find(:first)
     i = m.interests.create {|ii| ii.topic = 'Industrial Revolution Re-enactment'}
