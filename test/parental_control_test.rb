@@ -343,4 +343,56 @@ class ParentalControlShouldntBreakWithPolymorphics < Test::Unit::TestCase
       mt.revealable
     end
   end
+  
+  def test_trying_to_assign_to_polymoprhic_via_association_shouldnt_cause_name_errors
+    mt = MagicTrick.create(:magic_word => 'Shazam!')
+    f = Face.first
+    assert_nothing_raised(NameError) do
+      mt.revealable = f
+      mt.save!
+      mt.revealable
+      f.magic_trick
+    end
+  end
 end
+
+class ParentalControlBelongsToPolymorphicTests < Test::Unit::TestCase
+
+  def test_child_instance_should_be_shared_with_parent_on_find
+    mt = MagicTrick.find(:first, :conditions => "revealable_type = 'Face'")
+    f = mt.revealable
+    assert_not_nil f.magic_trick
+    assert_equal f.description, mt.revealable.description, "Description of face should be the same before changes to child instance"
+    f.description = 'gormless'
+    assert_equal f.description, mt.revealable.description, "Description of face should be the same after changes to child instance"
+    mt.revealable.description = 'pleasing'
+    assert_equal f.description, mt.revealable.description, "Description of face should be the same after changes to parent-owned instance"
+  end
+  
+  def test_child_instance_should_be_shared_with_replaced_via_accessor_parent
+    mt = MagicTrick.find(:first, :conditions => "revealable_type = 'Face'")
+    f = Face.new(:description => 'happy')
+    mt.revealable = f
+    assert_not_nil mt.revealable
+    assert_not_nil f.magic_trick
+    assert_equal f.description, mt.revealable.description, "Description of face should be the same before changes to child instance"
+    f.description = 'gormless'
+    assert_equal f.description, mt.revealable.description, "Description of face should be the same after changes to child instance"
+    mt.revealable.description = 'pleasing'
+    assert_equal f.description, mt.revealable.description, "Description of face should be the same after changes to replaced-parent-owned instance"
+  end
+  
+  def test_child_instance_should_be_shared_with_replaced_via_method_parent
+    mt = MagicTrick.find(:first, :conditions => "revealable_type = 'Face'")
+    f = Face.new(:description => 'happy')
+    mt.revealable.replace(f)
+    assert_not_nil mt.revealable
+    assert_not_nil f.magic_trick
+    assert_equal f.description, mt.revealable.description, "Description of face should be the same before changes to child instance"
+    f.description = 'gormless'
+    assert_equal f.description, mt.revealable.description, "Description of face should be the same after changes to child instance"
+    mt.revealable.description = 'pleasing'
+    assert_equal f.description, mt.revealable.description, "Description of face should be the same after changes to replaced-parent-owned instance"
+  end
+end
+

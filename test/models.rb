@@ -76,3 +76,11 @@ steve.interests.build(:topic => 'Hunting', :zine => compendia_two)
 steve.interests.build(:topic => 'Woodsmanship', :zine => compendia_two)
 steve.interests.build(:topic => 'Survival', :zine => compendia_two)
 steve.save!
+
+face_reveal = MagicTrick.create(:magic_word => 'Shazam!')
+face_reveal.revealable = dave.face
+face_reveal.save!
+
+man_reveal = MagicTrick.create(:magic_word => 'Ali-kazam!')
+man_reveal.revealable = steve
+man_reveal.save!

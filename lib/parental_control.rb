@@ -148,6 +148,22 @@ module ParentalControl
   # Not yet... :(
   
   module BelongsToPolymorphicAssociationMethods
+    def self.included(base)
+      base.class_eval do
+        def replace_with_parental_control(record)
+          set_reciprocal_instance(record, @owner)
+          replace_without_parental_control(record)
+        end
+        alias_method_chain :replace, :parental_control
+        
+        def find_target_with_parental_control
+          record = find_target_without_parental_control
+          set_reciprocal_instance(record, @owner)
+          record
+        end
+        alias_method_chain :find_target, :parental_control
+      end
+    end
   end
   
   module HasAndBelongsToManyAssociationMethods
