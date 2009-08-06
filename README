@@ -7,6 +7,8 @@ This might increase performance.  It might not.  It might make it easier to do t
 
 So far it works for has_many and has_one (not :through) associations.  It also works for belongs_to asociations where the reciprocal association on the parent is a has_one.
 
+For polymorphic associations it works for the belongs_to ends, but not the has_one or has_many ends of the association.
+
 Example
 =======
 
