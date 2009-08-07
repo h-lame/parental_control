@@ -113,6 +113,17 @@ class ParentalControlHasOneTests < Test::Unit::TestCase
     f.man.name = 'Mungo'
     assert_equal m.name, f.man.name, "Name of man should be the same after changes to replaced-child-owned instance"
   end
+  
+  def test_should_still_raise_type_mismatch_when_assigning_something_thats_not_an_active_record_object
+    m = Man.find(:first)
+    assert_raise(ActiveRecord::AssociationTypeMismatch) do
+      m.face = 1
+    end
+
+    assert_raise(ActiveRecord::AssociationTypeMismatch) do
+      m.face.replace(1)
+    end
+  end
 end
 
 class ParentalControlHasManyTests < Test::Unit::TestCase
@@ -221,6 +232,22 @@ class ParentalControlHasManyTests < Test::Unit::TestCase
     i.man.name = 'Mungo'
     assert_equal m.name, i.man.name, "Name of man should be the same after changes to replaced-child-owned instance"
   end
+  
+  def test_should_still_raise_type_mismatch_when_assigning_something_thats_not_an_active_record_object
+    m = Man.find(:first)
+    assert_raise(ActiveRecord::AssociationTypeMismatch) do
+      m.interests << 1
+    end
+
+    assert_raise(ActiveRecord::AssociationTypeMismatch) do
+      m.interests = [1]
+    end
+
+    assert_raise(ActiveRecord::AssociationTypeMismatch) do
+      m.interests.replace([1])
+    end
+  end
+  
 end
 
 class ParentalControlBelongsToTests < Test::Unit::TestCase
@@ -292,6 +319,17 @@ class ParentalControlBelongsToTests < Test::Unit::TestCase
     assert_not_equal i.topic, iz.topic, "Interest topics should not be the same after changes to child"
     iz.topic = 'Cow tipping'
     assert_not_equal i.topic, iz.topic, "Interest topics should not be the same after changes to parent-owned instance"
+  end
+  
+  def test_should_still_raise_type_mismatch_when_assigning_something_thats_not_an_active_record_object
+    f = Face.find(:first)
+    assert_raise(ActiveRecord::AssociationTypeMismatch) do
+      f.man = 1
+    end
+
+    assert_raise(ActiveRecord::AssociationTypeMismatch) do
+      f.man.replace(1)
+    end
   end
 end
 
@@ -394,5 +432,27 @@ class ParentalControlBelongsToPolymorphicTests < Test::Unit::TestCase
     mt.revealable.description = 'pleasing'
     assert_equal f.description, mt.revealable.description, "Description of face should be the same after changes to replaced-parent-owned instance"
   end
-end
+  
+  # NOTE - AR doesn't throw Mismatch errors when assigning non AR polymorphics it will throw a NoMethodError
+  # complaining about a lack of base_class.  We need to check that this is still the case and it's not something
+  # PC is doing that causes the error. (Assumes 2.2.x or 2.3.x behaviour).
+  def test_should_still_provide_default_active_record_behaviour_when_assigning_something_thats_not_an_active_record_object
+    mt = MagicTrick.find(:first)
+    begin
+      mt.revealable = 1
+      flunk 'Should have raised an error while assigning a non AR object'
+    rescue NoMethodError => e
+      assert_match /base_class/, e.message, "Should have raised default AR error about base_class"
+    end
 
+    mt.reload
+
+    begin
+      mt.revealable.replace(1)
+      flunk 'Should have raised an error while assigning a non AR object'
+    rescue NoMethodError => e
+      assert_match /base_class/, e.message, "Should have raised default AR error about base_class"
+    end
+  end
+  
+end
